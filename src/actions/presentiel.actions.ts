@@ -176,7 +176,7 @@ export async function getPublicPresentielCourses() {
     });
 
     // Formater le niveau pour le frontend
-    const formattedCourses = courses.map(course => ({
+    const formattedCourses = courses.map((course: any) => ({
       ...course,
       levelFrontend: Object.keys(levelMap).find(key => levelMap[key] === course.level) || "Débutant"
     }));

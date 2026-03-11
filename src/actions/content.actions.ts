@@ -17,7 +17,7 @@ export async function getSiteContent() {
     // On transforme le tableau en un objet structuré et on parse le JSON
     const content: Record<string, any> = {};
     
-    settings.forEach(setting => {
+    settings.forEach((setting: any) => {
       const sectionKey = setting.key.replace('content_', ''); // ex: "content_hero" devient "hero"
       try {
         content[sectionKey] = JSON.parse(setting.value);

@@ -106,7 +106,7 @@ export async function getAnalyticsData() {
     const topCourses = topCoursesData
       .sort((a, b) => b._count.enrollments - a._count.enrollments)
       .slice(0, 4)
-      .map(c => ({
+      .map((c: any) => ({
         course: c.title,
         students: c._count.enrollments,
         revenue: (c.price * c._count.enrollments)
@@ -121,7 +121,7 @@ export async function getAnalyticsData() {
       }
     });
 
-    const recentInscriptions = recentInscriptionsData.map(e => ({
+    const recentInscriptions = recentInscriptionsData.map((e: any) => ({
       name: e.user.name,
       course: e.course.title,
       date: new Date(e.createdAt).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', hour: '2-digit', minute:'2-digit' }),

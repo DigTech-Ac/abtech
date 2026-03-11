@@ -34,7 +34,7 @@ export async function createOrder(orderData: any, cartItems: any[], couponCode?:
       });
     }
 
-    const productIds = cartItems.map(item => item.product.id);
+    const productIds = cartItems.map((item: any) => item.product.id);
     const dbProducts = await prisma.product.findMany({
       where: { id: { in: productIds } }
     });

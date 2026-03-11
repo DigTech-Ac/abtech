@@ -116,8 +116,8 @@ export async function getUserPurchases() {
     });
 
     const digitalProducts: any[] =[];
-    orders.forEach(order => {
-      order.items.forEach(item => {
+    orders.forEach((order: any) => {
+      order.items.forEach((item: any) => {
         if (item.product.isDigital && item.product.fileUrl) {
           if (!digitalProducts.find(p => p.id === item.product.id)) {
             digitalProducts.push({
