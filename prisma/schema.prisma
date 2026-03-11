@@ -1,0 +1,240 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// --- ENUMS ---
+enum Role {
+  USER
+  STUDENT
+  INSTRUCTOR
+  MODERATOR
+  ADMIN
+}
+
+enum PostStatus {
+  DRAFT
+  PUBLISHED
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+enum CourseLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+// --- MODELES ---
+
+model User {
+  id            String       @id @default(cuid())
+  email         String       @unique
+  password      String
+  name          String
+  role          Role         @default(USER)
+  avatar        String?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  posts         Post[]       @relation("AuthorPosts")
+  courses       Course[]     @relation("InstructorCourses")
+  enrollments   Enrollment[]
+  orders        Order[]
+  lessonProgress LessonProgress[]
+  activityLogs ActivityLog[]
+}
+
+model Post {
+  id          String     @id @default(cuid())
+  slug        String     @unique
+  title       String
+  excerpt     String?
+  content     String
+  image       String?
+  category    String
+  views       Int        @default(0)
+  likes       Int        @default(0)
+  status      PostStatus @default(DRAFT)
+  
+  authorId    String
+  author      User       @relation("AuthorPosts", fields: [authorId], references: [id])
+  
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+model Product {
+  id              String      @id @default(cuid())
+  name            String
+  description     String
+  longDescription String?
+  price           Int         
+  oldPrice        Int?
+  image           String?
+  images          String      
+  category        String
+  rating          Float       @default(0)
+  reviews         Int         @default(0)
+  inStock         Boolean     @default(true)
+  isNew           Boolean     @default(false)
+  isHot           Boolean     @default(false)
+  specs           String? 
+  isDigital       Boolean     @default(false)
+  fileUrl         String?      
+  
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  orderItems      OrderItem[]
+}
+
+model Order {
+  id              String      @id @default(cuid())
+  userId          String
+  user            User        @relation(fields: [userId], references: [id])
+  totalAmount     Int
+  status          OrderStatus @default(PENDING)
+  paymentMethod   String
+  shippingAddress String?
+  city            String?
+  country         String?
+  phone           String?
+  notes           String?
+  couponCode      String?
+  
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  items           OrderItem[]
+}
+
+model OrderItem {
+  id          String   @id @default(cuid())
+  orderId     String
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId   String
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  quantity    Int
+  price       Int      
+}
+
+model Course {
+  id               String      @id @default(cuid())
+  slug             String      @unique
+  title            String
+  description      String
+  shortDescription String
+  image            String?
+  category         String
+  level            CourseLevel @default(BEGINNER)
+  duration         String
+  price            Int         
+  isFree           Boolean     @default(false)
+  
+  instructorId     String
+  instructor       User        @relation("InstructorCourses", fields: [instructorId], references: [id])
+  
+  requirements     String      
+  objectives       String
+   included         String?      
+  
+  isPresentiel     Boolean     @default(false)
+  location         String?     
+  startDate        DateTime?   
+  schedule         String?     
+  maxStudents      Int?        
+  
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+
+  lessons          Lesson[]
+  enrollments      Enrollment[]
+}
+
+model Lesson {
+  id          String   @id @default(cuid())
+  courseId    String
+  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  title       String
+  duration    String
+  videoUrl    String?
+  documentUrl String?
+  content     String?
+  isFree      Boolean  @default(false)
+  order       Int      @default(0) 
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  progress    LessonProgress[]
+}
+
+model Enrollment {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  courseId    String
+  course      Course   @relation(fields: [courseId], references: [id])
+  progress    Int      @default(0) 
+  isPaid      Boolean  @default(false)
+  amountPaid  Int?
+  couponCode  String?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([userId, courseId]) 
+}
+
+model LessonProgress {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  lessonId    String
+  lesson      Lesson   @relation(fields: [lessonId], references:[id], onDelete: Cascade)
+  isCompleted Boolean  @default(true)
+  completedAt DateTime @default(now())
+
+  @@unique([userId, lessonId])
+}
+
+model Setting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String   @db.Text
+  updatedAt DateTime @updatedAt
+}
+
+model Coupon {
+  id            String    @id @default(cuid())
+  code          String    @unique
+  discountType  String    // "PERCENTAGE" (ex: 20%) ou "FIXED" (ex: 5000 CFA)
+  discountValue Int       
+  isActive      Boolean   @default(true)
+  expiresAt     DateTime? // Date d'expiration optionnelle
+  maxUses       Int?      // Nombre maximum d'utilisations (ex: les 10 premiers)
+  usedCount     Int       @default(0)
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model ActivityLog {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  action    String   // "CREATE", "UPDATE", "DELETE"
+  target    String   // "PRODUCT", "COURSE", "POST", "SERVICE"
+  details   String   // Ex: "A supprimé le produit 'Ordinateur HP'"
+  createdAt DateTime @default(now())
+}
