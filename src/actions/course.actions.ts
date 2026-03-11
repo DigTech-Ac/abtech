@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { verifyToken } from "@/lib/jwt";
-import { CourseLevel } from "@prisma/client";
+// import { CourseLevel } from "@prisma/client";
 import { logActivity } from "./activity.actions";
 
 async function getCurrentUserId() {
@@ -18,7 +18,7 @@ async function getCurrentUserId() {
   return payload.id;
 }
 
-const levelMap: Record<string, CourseLevel> = {
+const levelMap: Record<string, any> = {
   "Débutant": "BEGINNER",
   "Intermédiaire": "INTERMEDIATE",
   "Avancé": "ADVANCED"
