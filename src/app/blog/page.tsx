@@ -4,6 +4,8 @@ import Footer from "@/components/Footer";
 import { getPublishedPosts } from "@/actions/post.actions";
 import BlogClient from "./BlogClient";
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: "Blog | AbTech-Digital",
   description: "Découvrez les derniers articles, tutoriels et conseils d'AbTech-Digital pour votre réussite dans le digital. Programmation, marketing, carrière et bien plus.",

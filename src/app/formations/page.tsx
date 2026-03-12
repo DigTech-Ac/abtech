@@ -5,6 +5,8 @@ import Footer from "@/components/Footer";
 import FormationsClient from "./FormationsClient";
 import { getPublicPresentielCourses } from "@/actions/presentiel.actions";
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: "Toutes nos Formations | AbTech-Digital",
   description: "Découvrez notre catalogue complet de formations pour exceller dans le digital.",

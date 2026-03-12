@@ -7,6 +7,8 @@ import { getSiteContent } from "@/actions/content.actions";
 import { getPublicCourses } from "@/actions/course.actions";
 import { getUserPaidCourseIds } from "@/actions/student.actions";
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: "AbTech-Digital - Agence Informatique & Services Digitaux",
   description: "Nous aidons les particuliers et entreprises à créer des solutions numériques modernes et efficaces en Afrique.",
