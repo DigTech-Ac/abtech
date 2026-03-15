@@ -9,9 +9,24 @@ declare global {
 let prismaInstance: PrismaClient;
 
 try {
-  // Prisma 7 : Configuration via l'adaptateur PG
-  const connectionString = process.env.DATABASE_URL;
-  const pool = new Pool({ connectionString });
+  let connectionString: string;
+  
+  if (process.env.DATABASE_URL) {
+    connectionString = process.env.DATABASE_URL;
+  } else if (process.env.DIRECT_URL) {
+    connectionString = process.env.DIRECT_URL;
+  } else {
+    throw new Error('DATABASE_URL environment variable is not set');
+  }
+  
+  const pool = new Pool({ 
+    connectionString,
+    max: 5,
+    allowExitOnIdle: true,
+    idleTimeoutMillis: 30000,
+    connectionTimeoutMillis: 10000,
+    ssl: { rejectUnauthorized: false },
+  });
   const adapter = new PrismaPg(pool);
 
   prismaInstance = global.prisma || new PrismaClient({ adapter });
